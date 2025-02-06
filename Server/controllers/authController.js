@@ -11,9 +11,9 @@ export const register = async (req,res)=>{
     }
     try{
 
-        const existingUser = await userModel.find({email})
+        const existingUser = await userModel.findOne({email})
 
-        if(existingUser){
+        if(existingUser){                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
             return res.json({success:false,message:'User already exists'});
         }
 
@@ -31,11 +31,12 @@ export const register = async (req,res)=>{
             maxAge: 7 * 24 *  60 * 60 * 1000
         });
 
-        return res.json({success: true});
+        return res.json({success: true,message: 'Successfully registered!'});
 
     }catch (error) {
         console.error('Error:',error); // Log the error message to the console
-        res.status(500).json({ success: false, message: 'An error occurred on the server.' }); // Send a generic error response
+        console.log(error);
+        res.json({ success: false, message: error.message }); 
     }
     
 }
@@ -48,7 +49,7 @@ export const login = async (req, res) => {
     }
 
     try{
-        const user = await userModel.find({email})
+        const user = await userModel.findOne({email});
 
         if(!user) {
             return res.json({success:false,message:' Invalid email '});
@@ -69,7 +70,7 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 *  60 * 60 * 1000
         });
 
-        return res.json({success: true});        
+        return res.json({success: true,message:'successfully logged'});        
 
     }catch(error){
         res.json({success:false,message: error.message});
