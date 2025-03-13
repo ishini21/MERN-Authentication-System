@@ -1,21 +1,60 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState} from "react";
+import axios from "axios";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { AppContent } from "../context/AppContext";
+import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
 
-  const { backendUrl, setIsLoggedin } = useContext(AppContent);
+  const { backendUrl, setIsLoggedin,getUserData } = useContext(AppContent);
 
   const [state, setState] = useState("Sign Up");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  console.log("Backend URL:", backendUrl);
+
   const onSubmitHandler = async (e) => {
+    
+
     try {
       e.preventDefault();
+
+      axios.defaults.withCredentials = true;
+
+
+
+      if (state === "Sign Up") {
+        const { data } = await axios.post(`${backendUrl}/api/auth/register`, {
+          name,
+          email,
+          password,
+        });
+        if (data.success) {
+          setIsLoggedin(true);
+          getUserData()
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
+          
+          email,
+          password,
+        });
+        if (data.success) {
+          setIsLoggedin(true);
+          getUserData()
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+
+      }
     } catch (error) {
       console.error(error);
     }
